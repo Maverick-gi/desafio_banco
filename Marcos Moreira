@@ -1,0 +1,121 @@
+O QUE FOI ADICIONADO:
+1- Limite de 10 transações diárias: Após atingir 10 transações, o sistema deve informar que o limite foi excedido.
+2- Mostrar data e hora nas transações: O extrato deve mostrar o horário e a data de cada transação realizada.
+3- Limitar as transações diárias: O código irá permitir até 10 transações por dia, e, se esse limite for atingido, o usuário será informado.
+
+import datetime
+
+# Variáveis globais
+movimentacoes = []
+transacoes_diarias = 0  # Contador de transações diárias
+limite_transacoes_dia = 10  # Limite de transações diárias
+saldo = 0
+data_ultimo_saque = datetime.date.today()
+
+def mostrar_extrato(movimentacoes):
+    if movimentacoes:
+        print("Extrato da conta:")
+        for transacao in movimentacoes:
+            print(transacao)
+    else:
+        print("Não foram realizadas movimentações.")
+
+def mostrar_saldo(saldo):
+    print(f"Seu saldo atual é: R${saldo:.2f}")
+
+def resetar_transacoes_diarias():
+    global transacoes_diarias, data_ultimo_saque
+    # Verificar se é um novo dia e resetar as transações
+    if data_ultimo_saque != datetime.date.today():
+        transacoes_diarias = 0
+        data_ultimo_saque = datetime.date.today()
+        print("Novo dia! O contador de transações diárias foi resetado.")
+
+def menu_inicial():
+    global saldo, transacoes_diarias, data_ultimo_saque
+
+    print("BANCO MU!")
+    
+    while True:
+        resetar_transacoes_diarias()  # Resetar transações diárias ao iniciar cada novo dia
+        
+        operacao_selecionada = input("Selecione a operação desejada:\n1 para extrato\n2 para depósito\n3 para saque\n4 para sair\n")    
+
+        if operacao_selecionada == '1':
+            mostrar_extrato(movimentacoes)
+            mostrar_saldo(saldo)
+        
+        elif operacao_selecionada == '2':
+            # Verifica se o limite de transações foi atingido
+            if transacoes_diarias < limite_transacoes_dia:
+                valor_deposito = input("Valor do depósito: R$")
+                try:
+                    valor_deposito = float(valor_deposito)
+                    if valor_deposito > 0:
+                        saldo += valor_deposito
+                        now = datetime.datetime.now()
+                        movimentacoes.append(f"+R${valor_deposito:.2f} ({now.strftime('%d-%m-%Y %H:%M')})")
+                        transacoes_diarias += 1
+                        print(f"Operação realizada com sucesso. Seu saldo atual é: R${saldo:.2f}")
+                    else:
+                        print("Não é possível inserir um valor negativo, tente novamente.")
+                except ValueError:
+                    print("Por favor, insira um número válido.")
+            else:
+                print("Você atingiu o limite de transações diárias!")
+        
+        elif operacao_selecionada == '3':
+            # Verifica se o limite de transações foi atingido
+            if transacoes_diarias < limite_transacoes_dia:
+                valor_saque = input("Valor do saque: R$")
+                try:
+                    valor_saque = float(valor_saque)
+                    if valor_saque > 0:
+                        if valor_saque <= saldo:
+                            saldo -= valor_saque
+                            transacoes_diarias += 1
+                            now = datetime.datetime.now()
+                            movimentacoes.append(f"-R${valor_saque:.2f} ({now.strftime('%d-%m-%Y %H:%M')})")
+                            print(f"Saque de R${valor_saque:.2f} realizado com sucesso. Seu saldo atual é: R${saldo:.2f}")
+                        else:
+                            print("Saldo insuficiente para realizar o saque.")
+                    else:
+                        print("O valor do saque deve ser positivo.")
+                except ValueError:
+                    print("Por favor, insira um número válido para o saque.")
+            else:
+                print("Você atingiu o limite de transações diárias!")
+        
+        elif operacao_selecionada == '4':
+            print("******* Eu não sou o BANCO MU, mas fui feito para você. *******")
+            print("******* Saindo do Banco MU! Até logo! *******")
+            break  # Sai do loop e encerra o programa
+        
+        else:
+            print("Opção inválida. Tente novamente.")
+
+menu_inicial()
+
+O QUE FOI ALTERADO:
+Limite de 10 transações diárias:
+
+O código agora verifica se o número de transações diárias foi atingido. Se sim, o sistema informa que o limite de transações foi atingido e impede novas transações até o próximo dia.
+Resete o contador de transações diárias no novo dia:
+
+A função resetar_transacoes_diarias() verifica se a data do último saque é diferente da data atual. Se for, o contador de transações e a data do último saque são atualizados, e o número de transações diárias é resetado para 0. Isso acontece automaticamente toda vez que o programa roda.
+Data e hora no extrato:
+
+Cada transação é registrada no extrato com a data e hora atual, usando datetime.now(). O formato é dd-mm-YYYY HH:MM.
+Ajuste no fluxo de transações:
+
+Depósitos: São permitidos até o limite diário de transações.
+Saques: Também são limitados a 10 transações diárias.
+O sistema impede qualquer transação adicional após o limite ser atingido e informa ao usuário.
+
+
+COMO FUNCIONA:
+Ao iniciar o programa, o menu de operações é mostrado. O usuário pode escolher entre extrato, depósito, saque, ou sair.
+Extrato: Exibe todas as transações realizadas, com data e hora.
+Depósito: O usuário pode depositar valores, mas se o limite de 10 transações diárias for atingido, a operação é bloqueada e uma mensagem é exibida.
+Saque: Funciona da mesma forma, com as restrições de saldo e limite de transações diárias. Se o limite for atingido, o saque não pode ser realizado.
+Novo dia: Se o programa for executado em um novo dia, o contador de transações é resetado automaticamente.
